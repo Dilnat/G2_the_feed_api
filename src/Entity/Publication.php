@@ -24,7 +24,6 @@ use Doctrine\ORM\Mapping as ORM;
         new Delete()
     ]
 )]
-
 #[ORM\HasLifecycleCallbacks]
 class Publication
 {
