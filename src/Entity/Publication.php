@@ -9,6 +9,8 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use App\Repository\PublicationRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -47,6 +49,12 @@ class Publication
     #[ApiProperty(writable:false)]
     private ?\DateTimeInterface $datePublication = null;
 
+    #[ORM\ManyToOne(fetch: 'EAGER', inversedBy: 'publications')]
+    #[ORM\JoinColumn(nullable: false, onDelete: "CASCADE")]
+    #[ApiProperty(required: true)]
+    private ?Utilisateur $auteur = null;
+
+
     public function getId(): ?int
     {
         return $this->id;
@@ -80,4 +88,18 @@ class Publication
     public function prePersistDatePublication() : void {
         $this->datePublication = new \DateTime();
     }
+
+    public function getAuteur(): ?Utilisateur
+    {
+        return $this->auteur;
+    }
+
+    public function setAuteur(?Utilisateur $auteur): static
+    {
+        $this->auteur = $auteur;
+
+        return $this;
+    }
+
+
 }

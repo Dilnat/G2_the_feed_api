@@ -58,6 +58,8 @@ class Utilisateur implements UserInterface/*, PasswordAuthenticatedUserInterface
     #[Assert\Email(message:"l'adresse mail n'est pas valide")]
     private ?string $adresseEmail = null;
 
+    #[ORM\OneToMany(mappedBy: 'auteur', targetEntity: Publication::class, orphanRemoval: true)]
+    private Collection $publications;
     #[ORM\Column(options: ["default" => false])]
     #[ApiProperty(readable : true, writable: false)]
     private ?bool $premium = false;
@@ -159,4 +161,36 @@ class Utilisateur implements UserInterface/*, PasswordAuthenticatedUserInterface
 
         return $this;
     }
+
+    /**
+     * @return Collection<int, self>
+     */
+    public function getPublications(): Collection
+    {
+        return $this->publications;
+    }
+
+    public function addPublication(Publication $publication): static
+    {
+        if (!$this->publications->contains($publication)) {
+            $this->publications->add($publication);
+            $publication->setAuteur($this);
+        }
+
+        return $this;
+    }
+
+    public function removePublication(Publication $publication): static
+    {
+        if ($this->publications->removeElement($publication)) {
+            // set the owning side to null (unless already changed)
+            if ($publication->getAuteur() === $this) {
+                $publication->setAuteur(null);
+            }
+        }
+
+        return $this;
+    }
+
+
 }
