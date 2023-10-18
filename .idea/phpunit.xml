@@ -4,6 +4,7 @@
     <option name="directories">
       <list>
         <option value="$PROJECT_DIR$/the_feed_symfony/tests" />
+        <option value="$PROJECT_DIR$/tests" />
       </list>
     </option>
   </component>
