@@ -7,6 +7,7 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Post;
 use App\Repository\PublicationRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -17,14 +18,23 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: PublicationRepository::class)]
 #[ApiResource(
-    order : ["datePublication" => "DESC"],
     operations: [
         new GetCollection(),
         new Get(),
         new Post(),
-        new Delete()
+        new Delete(),
+        new GetCollection(
+            uriTemplate: '/utilisateurs/{id}/publications',
+            uriVariables: [
+                'id' => new Link(
+                    fromProperty: 'publications',
+                    fromClass: Utilisateur::class
+                )
+            ]
+        )
     ],
-    normalizationContext: ["groups" => ["publication:read"]]
+    normalizationContext: ["groups" => ["publication:read"]],
+    order: ["datePublication" => "DESC"]
 )]
 #[ORM\HasLifecycleCallbacks]
 class Publication
