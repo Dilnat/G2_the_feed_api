@@ -17,6 +17,7 @@ use Doctrine\ORM\Mapping as ORM;
 //use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[UniqueEntity('login')]
@@ -29,21 +30,25 @@ use Symfony\Component\Validator\Constraints as Assert;
         new Post(),
         new Delete(),
         new Patch()
-    ]
+    ],
+    normalizationContext: ["groups" => ["utilisateur:read"]]
 )]
 class Utilisateur implements UserInterface/*, PasswordAuthenticatedUserInterface*/
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['utilisateur:read', 'publication:read'])]
     private ?int $id = null;
     #[Assert\NotBlank]
     #[Assert\NotNull]
     #[ORM\Column(length: 180, unique: true)]
     #[Assert\Length(min:4, max:20, minMessage: "Il faut au moins 4 caractères", maxMessage: "Il faut au plus 20 caractères")]
+    #[Groups(['utilisateur:read', 'publication:read'])]
     private ?string $login = null;
 
     #[ORM\Column]
+    #[Groups(['utilisateur:read', 'publication:read'])]
     private array $roles = [];
 
     /**
@@ -56,12 +61,14 @@ class Utilisateur implements UserInterface/*, PasswordAuthenticatedUserInterface
     #[Assert\NotBlank]
     #[Assert\NotNull]
     #[Assert\Email(message:"l'adresse mail n'est pas valide")]
+    #[Groups(['utilisateur:read', 'publication:read'])]
     private ?string $adresseEmail = null;
 
     #[ORM\OneToMany(mappedBy: 'auteur', targetEntity: Publication::class, orphanRemoval: true)]
     private Collection $publications;
     #[ORM\Column(options: ["default" => false])]
     #[ApiProperty(readable : true, writable: false)]
+    #[Groups(['utilisateur:read', 'publication:read'])]
     private ?bool $premium = false;
 
     public function __construct()
